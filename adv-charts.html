@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Charts - StockPulse</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- 🔥 মোবাইলে কনসোল দেখার জন্য (ডিবাগিং সহজ করতে) -->
+    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+    <script>
+        eruda.init();
+        console.log('🔥 eruda initialized for Advanced Charts');
+    </script>
+
+    <style>
+        /* 📦 অ্যাডভান্সড পেজের জন্য কাস্টম স্টাইল */
+        .adv-page {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 헤더 */
+        .adv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: var(--bg-secondary);
+            padding: 18px 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        .adv-header:hover {
+            box-shadow: var(--card-shadow-hover);
+        }
+        .adv-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .adv-header h1 span {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* কন্ট্রোলস */
+        .adv-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .adv-controls select,
+        .adv-controls input {
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: var(--transition);
+            min-height: 42px;
+        }
+        .adv-controls select:focus,
+        .adv-controls input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+        .adv-controls select { min-width: 160px; }
+        .adv-controls input[type="text"] { min-width: 180px; }
+
+        .adv-controls button {
+            padding: 8px 22px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: var(--transition);
+            min-height: 42px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        .adv-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        /* চার্ট টগল বাটন গ্রুপ */
+        .chart-toggle-group {
+            display: flex;
+            gap: 8px;
+            background: var(--bg-tertiary);
+            padding: 4px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+        .chart-toggle-group .toggle-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: var(--transition);
+            background: transparent;
+            color: var(--text-secondary);
+        }
+        .chart-toggle-group .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+        }
+        .chart-toggle-group .toggle-btn:hover:not(.active) {
+            background: var(--hover-bg);
+        }
+
+        /* টাইমফ্রেম বাটন গ্রুপ */
+        .timeframe-group {
+            display: flex;
+            gap: 4px;
+            margin: 10px 0 15px 0;
+            flex-wrap: wrap;
+        }
+        .timeframe-group .tf-btn {
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            background: transparent;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .timeframe-group .tf-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        .timeframe-group .tf-btn:hover:not(.active) {
+            background: var(--hover-bg);
+        }
+
+        /* ইন্ডিকেটর গ্রুপ */
+        .indicator-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 15px 0 20px;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+        .indicator-group .indicator-btn {
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .indicator-group .indicator-btn.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .indicator-group .indicator-btn:hover {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+
+        /* প্রিসেট কন্ট্রোলস */
+        .preset-controls {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0 15px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .preset-controls button,
+        .preset-controls select {
+            padding: 4px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+        .preset-controls button:hover {
+            background: var(--hover-bg);
+        }
+        .preset-controls select {
+            min-width: 120px;
+            background: var(--input-bg);
+        }
+
+        /* ইনফো কার্ড */
+        .adv-info-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin: 15px 0 20px;
+        }
+        .adv-info-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 14px 12px;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: var(--card-shadow);
+        }
+        .adv-info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .adv-info-card .label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        .adv-info-card .value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-top: 4px;
+        }
+        .adv-info-card .value.positive { color: var(--success-color); }
+        .adv-info-card .value.negative { color: var(--danger-color); }
+
+        /* চার্ট কন্টেইনার */
+        .adv-chart-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            border: 1px solid var(--border-color);
+            margin: 15px 0;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        .adv-chart-container:hover {
+            box-shadow: var(--card-shadow-hover);
+        }
+        .adv-chart-container .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .adv-chart-container h3,
+        .adv-chart-container h4 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .adv-chart-container .chart-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .adv-chart-container .chart-actions button {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 4px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .adv-chart-container .chart-actions button:hover {
+            background: var(--hover-bg);
+        }
+        .adv-chart-wrapper {
+            position: relative;
+            height: 350px;
+            width: 100%;
+        }
+        .adv-chart-wrapper-sm { height: 150px; }
+
+        /* কমেন্ট বক্স */
+        .adv-comment-box {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--bg-tertiary);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            min-height: 32px;
+            border-left: 3px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        .adv-comment-box.bullish {
+            border-left-color: var(--success-color);
+        }
+        .adv-comment-box.bearish {
+            border-left-color: var(--danger-color);
+        }
+
+        /* সাজেশন বক্স */
+        .adv-suggestion-box {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin: 20px 0;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: var(--card-shadow);
+        }
+        [data-theme="dark"] .adv-suggestion-box {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+        }
+        .adv-suggestion-box .signal-badge {
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 14px;
+        }
+        .adv-suggestion-box .signal-buy { background: var(--success-color); color: white; }
+        .adv-suggestion-box .signal-sell { background: var(--danger-color); color: white; }
+        .adv-suggestion-box .signal-neutral { background: var(--warning-color); color: white; }
+
+        .adv-suggestion-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .adv-suggestion-item {
+            background: rgba(255,255,255,0.06);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .adv-suggestion-item .label {
+            font-size: 11px;
+            opacity: 0.6;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        .adv-suggestion-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        .adv-suggestion-item .sub {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* ডিপ অ্যানালাইসিস সাজেশন */
+        #deep-analysis-suggestion {
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 18px;
+        }
+        #deep-analysis-suggestion h4 {
+            margin: 0;
+            color: #f1f5f9;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #deep-analysis-suggestion .da-card {
+            background: rgba(255,255,255,0.06);
+            border-radius: 8px;
+            padding: 10px 14px;
+            border-left: 3px solid #f59e0b;
+        }
+        #deep-analysis-suggestion .da-card .da-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            letter-spacing: 0.5px;
+        }
+        #deep-analysis-suggestion .da-card .da-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        #deep-analysis-suggestion .da-card .da-sub {
+            font-size: 11px;
+            opacity: 0.6;
+        }
+
+        /* রেসপনসিভ */
+        @media (max-width: 768px) {
+            .adv-header { flex-direction: column; align-items: stretch; }
+            .adv-controls { flex-direction: column; }
+            .adv-controls select, .adv-controls input { width: 100%; }
+            .adv-info-cards { grid-template-columns: repeat(3, 1fr); }
+            .adv-chart-wrapper { height: 250px; }
+            .adv-chart-wrapper-sm { height: 120px; }
+            .indicator-group .indicator-btn { font-size: 10px; padding: 3px 8px; }
+            .chart-toggle-group .toggle-btn { font-size: 11px; padding: 6px 12px; }
+            .timeframe-group .tf-btn { font-size: 11px; padding: 3px 10px; }
+            .preset-controls button, .preset-controls select { font-size: 11px; padding: 3px 10px; }
+            .adv-chart-container .chart-header { flex-direction: column; align-items: flex-start; }
+            #deep-analysis-suggestion .da-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @media (max-width: 480px) {
+            .adv-info-cards { grid-template-columns: repeat(2, 1fr); }
+            .adv-header h1 { font-size: 20px; }
+            .adv-suggestion-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+            #deep-analysis-suggestion .da-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        @media (max-width: 400px) {
+            .adv-info-cards { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .adv-info-card .value { font-size: 16px; }
+        }
+
+        /* স্ক্রলবার স্টাইল */
+        .adv-chart-wrapper::-webkit-scrollbar,
+        .adv-suggestion-box::-webkit-scrollbar {
+            width: 6px;
+        }
+        .adv-chart-wrapper::-webkit-scrollbar-thumb,
+        .adv-suggestion-box::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 10px;
+        }
+
+        /* অ্যানিমেশন */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .adv-chart-container {
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* ডিপ অ্যানালাইসিস গ্রিড */
+        .da-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        @media (max-width: 768px) {
+            .da-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .da-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ডিপ অ্যানালাইসিস টেবিল */
+        .da-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #e2e8f0;
+            font-size: 12px;
+        }
+        .da-table th {
+            padding: 6px 8px;
+            text-align: left;
+            opacity: 0.7;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .da-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .da-table td.right { text-align: right; }
+        .da-table td.center { text-align: center; }
+
+        /* ডিপ অ্যানালাইসিস সামারি */
+        .da-summary {
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.04);
+            border-left: 4px solid #64748b;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ডার্ক মোড টগল -->
+    <div class="theme-switch" style="position: fixed; top: 16px; right: 20px; z-index: 999;">
+        <button id="theme-toggle" style="
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 30px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-primary);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        ">
+            <span id="theme-icon">🌙</span>
+            <span id="theme-text">Dark</span>
+        </button>
+    </div>
+
+    <div class="adv-page">
+        <!-- হেডার -->
+        <div class="adv-header">
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <button id="back-btn" style="
+                    padding: 8px 18px;
+                    background: var(--bg-secondary);
+                    border: 2px solid var(--border-color);
+                    border-radius: 30px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    font-size: 14px;
+                    color: var(--text-primary);
+                    transition: 0.3s;
+                " onmouseover="this.style.background='var(--hover-bg)'" onmouseout="this.style.background='var(--bg-secondary)'">
+                    ⬅ Back
+                </button>
+                <h1>📈 <span>Advanced Charts</span></h1>
+            </div>
+            <div class="adv-controls">
+                <div class="adv-search-wrapper" style="position:relative;">
+                    <input type="text" id="adv-chart-search" placeholder="Search share (e.g. GP)" autocomplete="off">
+                    <div id="adv-chart-suggestions" class="adv-suggestions" style="
+                        position: absolute;
+                        top: calc(100% + 4px);
+                        left: 0;
+                        width: 100%;
+                        background: var(--bg-secondary);
+                        border: 1px solid var(--border-color);
+                        border-radius: var(--radius-sm);
+                        box-shadow: var(--card-shadow-hover);
+                        max-height: 220px;
+                        overflow-y: auto;
+                        z-index: 9999;
+                        padding: 4px 0;
+                        display: none;
+                    "></div>
+                </div>
+                <select id="adv-data-source">
+                    <option value="database">💾 Database (Supabase)</option>
+                    <option value="live">📡 Live API</option>
+                </select>
+                <select id="adv-chart-period">
+                    <option value="30">1 Month</option>
+                    <option value="90">3 Months</option>
+                    <option value="180">6 Months</option>
+                    <option value="365">1 Year</option>
+                    <option value="all">All Time</option>
+                </select>
+                <button id="adv-chart-load">🔍 Load</button>
+            </div>
+        </div>
+
+        <!-- চার্ট টগল বাটন -->
+        <div class="chart-toggle-group">
+            <button id="toggle-chart-type" class="toggle-btn active">📈 Line Chart</button>
+            <button id="toggle-chart-type-candle" class="toggle-btn">🕯️ Candlestick</button>
+        </div>
+
+        <!-- টাইমফ্রেম বাটন -->
+        <div class="timeframe-group">
+            <button class="tf-btn active" data-tf="1d">1D</button>
+            <button class="tf-btn" data-tf="1w">1W</button>
+            <button class="tf-btn" data-tf="1M">1M</button>
+        </div>
+
+        <!-- ক্যান্ডেল চার্ট কন্টেইনার (ডিফল্ট লুকানো) -->
+        <div class="adv-chart-container" id="candlestick-wrapper" style="display:none;">
+            <div class="chart-header">
+                <h3>🕯️ Candlestick Chart</h3>
+                <div class="chart-actions">
+                    <button id="fullscreen-btn">⛶ Fullscreen</button>
+                    <button id="download-png-btn">📥 PNG</button>
+                </div>
+            </div>
+            <div id="candlestick-chart" style="height: 400px; width: 100%;"></div>
+            <div id="candlestick-comment" class="adv-comment-box">💡 Analysis will appear here</div>
+        </div>
+
+        <!-- ইনফো কার্ড -->
+        <div class="adv-info-cards" id="adv-info-cards">
+            <div class="adv-info-card"><div class="label">PRICE</div><div class="value" id="adv-info-price">-</div></div>
+            <div class="adv-info-card"><div class="label">CHANGE</div><div class="value" id="adv-info-change">-</div></div>
+            <div class="adv-info-card"><div class="label">HIGH</div><div class="value" id="adv-info-high">-</div></div>
+            <div class="adv-info-card"><div class="label">LOW</div><div class="value" id="adv-info-low">-</div></div>
+            <div class="adv-info-card"><div class="label">AVG BUY</div><div class="value" id="adv-info-avgbuy">-</div></div>
+        </div>
+
+        <!-- ইন্ডিকেটর প্রিসেট -->
+        <div class="preset-controls">
+            <button id="save-preset-btn">💾 Save Preset</button>
+            <select id="preset-select">
+                <option value="">Load Preset</option>
+            </select>
+            <button id="delete-preset-btn">🗑️ Delete</button>
+        </div>
+
+        <!-- ইন্ডিকেটর (সম্পূর্ণ আপডেটেড) -->
+        <div class="indicator-group" id="indicator-group">
+            <!-- মূল ইন্ডিকেটর -->
+            <button class="indicator-btn active" data-indicator="sma5">SMA 5</button>
+            <button class="indicator-btn active" data-indicator="sma10">SMA 10</button>
+            <button class="indicator-btn active" data-indicator="sma20">SMA 20</button>
+            <button class="indicator-btn" data-indicator="sma50">SMA 50</button>
+            <button class="indicator-btn active" data-indicator="ema5">EMA 5</button>
+            <button class="indicator-btn active" data-indicator="ema10">EMA 10</button>
+            <button class="indicator-btn active" data-indicator="ema20">EMA 20</button>
+            <button class="indicator-btn" data-indicator="ema50">EMA 50</button>
+            <button class="indicator-btn active" data-indicator="rsi">RSI</button>
+            <button class="indicator-btn active" data-indicator="bollinger">Bollinger</button>
+            <button class="indicator-btn" data-indicator="stochastic">Stochastic</button>
+            <button class="indicator-btn" data-indicator="atr">ATR</button>
+            <button class="indicator-btn" data-indicator="forecast">ARIMA Forecast</button>
+            <button class="indicator-btn" data-indicator="psar">PSAR</button>
+            <!-- 🆕 নতুন ইন্ডিকেটর -->
+            <button class="indicator-btn" data-indicator="vwap">Anchored VWAP</button>
+            <button class="indicator-btn" data-indicator="volprofile">Volume Profile</button>
+            <button class="indicator-btn" data-indicator="fibonacci">Fibonacci</button>
+            <button class="indicator-btn" data-indicator="aroon">Aroon</button>
+            <button class="indicator-btn" data-indicator="ichimoku">Ichimoku</button>
+            <button class="indicator-btn" data-indicator="linreg">LinReg Forecast</button>
+            <button class="indicator-btn" data-indicator="wma">WMA Forecast</button>
+            <button class="indicator-btn" data-indicator="holtWinters">Holt-Winters</button>
+            <button class="indicator-btn" data-indicator="vwapForecast">VWAP Forecast</button>
+            <button class="indicator-btn" data-indicator="macdForecast">MACD Forecast</button>
+        </div>
+
+        <!-- মেইন লাইন চার্ট -->
+        <div class="adv-chart-container" id="line-chart-wrapper">
+            <div class="chart-header">
+                <h3 id="adv-chart-title">📊 Select a share</h3>
+                <div class="chart-actions">
+                    <button id="fullscreen-btn-line">⛶ Fullscreen</button>
+                    <button id="download-png-btn-line">📥 PNG</button>
+                    <span style="font-size: 12px; color: var(--text-muted);">Last updated: <span id="adv-chart-update-time">-</span></span>
+                </div>
+            </div>
+            <div class="adv-chart-wrapper">
+                <canvas id="adv-main-chart"></canvas>
+            </div>
+            <div id="adv-price-comment" class="adv-comment-box">💡 Price comment will appear here</div>
+        </div>
+
+        <!-- RSI ও Stochastic -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0;">
+            <div class="adv-chart-container">
+                <h4>📊 RSI (14) <span style="font-size:11px; font-weight:normal; opacity:0.6;">Overbought > 70 | Oversold < 30</span></h4>
+                <div class="adv-chart-wrapper adv-chart-wrapper-sm"><canvas id="adv-rsi-chart"></canvas></div>
+                <div id="adv-rsi-comment" class="adv-comment-box" style="font-size:12px;">💡 RSI comment will appear here</div>
+            </div>
+            <div class="adv-chart-container">
+                <h4>📊 Stochastic Oscillator <span style="font-size:11px; font-weight:normal; opacity:0.6;">%K (14) | %D (3)</span></h4>
+                <div class="adv-chart-wrapper adv-chart-wrapper-sm"><canvas id="adv-stochastic-chart"></canvas></div>
+                <div id="adv-stoch-comment" class="adv-comment-box" style="font-size:12px;">💡 Stochastic comment will appear here</div>
+            </div>
+        </div>
+
+        <!-- স্মার্ট সাজেশন -->
+        <div class="adv-suggestion-box" id="adv-suggestion-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+                <h3 style="margin:0; color:white;">🧠 Smart Suggestion</h3>
+                <span id="suggestion-time" style="font-size:12px; opacity:0.6;">Last updated: -</span>
+            </div>
+            <div id="suggestion-content">
+                <div style="text-align:center; padding:20px; opacity:0.7;">Load a share to see suggestions</div>
+            </div>
+
+            <!-- 🆕 অ্যাডভান্সড ডিপ অ্যানালাইসিস সাজেশন (VWAP + Volume Profile সহ) -->
+            <div id="deep-analysis-suggestion">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <h4 style="margin:0; color: #f1f5f9; font-size: 15px; display: flex; align-items: center; gap: 8px;">
+                        📊 <span>Smart Signal (VWAP + Volume Profile)</span>
+                        <span style="font-size: 11px; opacity: 0.6; font-weight: normal;">(Institutional-grade analysis)</span>
+                    </h4>
+                    <span id="deep-analysis-time" style="font-size: 11px; opacity: 0.5;">Last updated: -</span>
+                </div>
+                
+                <!-- লোডিং -->
+                <div id="deep-analysis-loader" style="text-align:center; padding:15px; opacity:0.6; font-size:13px;">
+                    ⏳ Analyzing with VWAP & Volume Profile...
+                </div>
+                
+                <!-- কন্টেন্ট -->
+                <div id="deep-analysis-content" style="display: none;">
+                    
+                    <!-- টপ ৩ কার্ড -->
+                    <div class="da-grid">
+                        <!-- কার্ড ১: VWAP স্ট্যাটাস -->
+                        <div class="da-card" style="border-left-color: #f59e0b;">
+                            <div class="da-label">Anchored VWAP</div>
+                            <div class="da-value" id="da-vwap">-</div>
+                            <div class="da-sub" id="da-vwap-sub">-</div>
+                        </div>
+                        
+                        <!-- কার্ড ২: POC (Point of Control) -->
+                        <div class="da-card" style="border-left-color: #8b5cf6;">
+                            <div class="da-label">Volume Profile (POC)</div>
+                            <div class="da-value" id="da-poc">-</div>
+                            <div class="da-sub" id="da-poc-sub">-</div>
+                        </div>
+                        
+                        <!-- কার্ড ৩: ফাইনাল সিগন্যাল -->
+                        <div class="da-card" style="border-left-color: #3b82f6;">
+                            <div class="da-label">Final Signal</div>
+                            <div class="da-value" id="da-signal">-</div>
+                            <div class="da-sub" id="da-signal-sub">-</div>
+                        </div>
+                    </div>
+                    
+                    <!-- ডিটেইল টেবিল -->
+                    <div style="background: rgba(255,255,255,0.04); border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 12px;">
+                        <table class="da-table">
+                            <thead>
+                                <tr>
+                                    <th>Metric</th>
+                                    <th style="text-align: right;">Value</th>
+                                    <th style="text-align: right;">Signal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="da-table-body">
+                                <tr><td colspan="3" style="padding: 10px; text-align: center; opacity: 0.5;">Loading...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- সারাংশ -->
+                    <div id="da-summary" class="da-summary">
+                        💡 <span id="da-summary-text">Analysis summary will appear here.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ফুটার -->
+        <div style="text-align:center; margin-top:30px; padding:15px; font-size:12px; color:var(--text-muted); border-top:1px solid var(--border-color);">
+            StockPulse Advanced Charts v2.0 | Data source: <span id="footer-source">Database</span>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- 📦 SCRIPTS - CDN LIBRARIES (ALWAYS FIRST) -->
+    <!-- ========================================== -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- ========================================== -->
+    <!-- ✅ ES MODULE ENTRY POINT (সবচেয়ে গুরুত্বপূর্ণ) -->
+    <!-- ========================================== -->
+    <script type="module">
+        // 🔥 ১. প্রয়োজনীয় ফাংশন ইমপোর্ট করুন (সঠিক পাথে)
+        import { 
+            loadAdvancedChart, 
+            loadSavedTheme, 
+            goBackToStockModal,
+            toggleFullscreen as advToggleFullscreen,
+            downloadChartAsPNG as advDownloadPNG,
+            saveIndicatorPreset,
+            loadIndicatorPreset,
+            deleteIndicatorPreset,
+            updatePresetSelect,
+            switchTimeframe
+        } from './js/app-charts.js';
+        import { toggleDarkMode } from './js/ui-helpers.js';
+        // ক্যান্ডেলস্টিক ফাংশন adv-charts-extras থেকে ইমপোর্ট করুন
+        import { renderCandlestickChart, loadCandlestickLibrary } from './js/adv-charts-extras.js';
+
+        // 🔥 ২. window-এ এক্সপোজ করুন (যাতে HTML-এর inline onclick কাজ করে)
+        window.goBackToStockModal = goBackToStockModal;
+        window.toggleDarkMode = toggleDarkMode;
+        window.toggleFullscreen = advToggleFullscreen;
+        window.downloadChartAsPNG = advDownloadPNG;
+        window.saveIndicatorPreset = saveIndicatorPreset;
+        window.loadIndicatorPreset = loadIndicatorPreset;
+        window.deleteIndicatorPreset = deleteIndicatorPreset;
+        window.updatePresetSelect = updatePresetSelect;
+        window.switchTimeframe = switchTimeframe;
+        window.renderCandlestickChart = renderCandlestickChart;
+        window.loadCandlestickLibrary = loadCandlestickLibrary;
+        window.loadAdvancedChart = loadAdvancedChart; // অ্যাডভান্সড চার্ট রিলোডের জন্য
+
+        console.log('✅ Advanced Charts ES Module loaded');
+
+        // 🔥 ৩. Service Worker আনরেজিস্টার করুন (ডাউনলোড সমস্যা সমাধানে)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                    console.log('✅ Service Worker unregistered from Advanced Charts');
+                }
+            }).catch(err => console.warn('SW unregister error:', err));
+        }
+
+        // 🔥 ৪. DOMContentLoaded - পেজ রেডি হলে
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 Advanced Charts DOM ready');
+
+            // ৪.১ থিম লোড করুন
+            if (typeof loadSavedTheme === 'function') {
+                loadSavedTheme();
+            }
+
+            // ৪.২ URL থেকে টিকার নাম বের করুন (মূল কাজ)
+            const params = new URLSearchParams(window.location.search);
+            const tickerFromURL = params.get('ticker');
+
+            // ৪.৩ সার্চ বক্সে টিকার নাম বসান
+            const searchInput = document.getElementById('adv-chart-search');
+            if (searchInput && tickerFromURL) {
+                searchInput.value = tickerFromURL;
+            }
+
+            // ৪.৪ 🚀 চার্ট লোড করুন (টিকার নাম দিয়ে)
+            if (tickerFromURL) {
+                console.log(`📈 Loading chart for: ${tickerFromURL}`);
+                loadAdvancedChart(tickerFromURL);
+            } else {
+                // ডিফল্ট হিসেবে 'GP' লোড করুন
+                console.log('📈 No ticker in URL, loading default: GP');
+                loadAdvancedChart('GP');
+            }
+
+            // ---- 🎛️ ৪.৫ সব কন্ট্রোলের জন্য ইভেন্ট লিসেনার ----
+
+            // ব্যাক বাটন
+            const backBtn = document.getElementById('back-btn');
+            if (backBtn) {
+                backBtn.addEventListener('click', goBackToStockModal);
+            }
+
+            // থিম টগল
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', toggleDarkMode);
+            }
+
+            // লোড বাটন
+            const loadBtn = document.getElementById('adv-chart-load');
+            if (loadBtn) {
+                loadBtn.addEventListener('click', function() {
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+            }
+
+            // ডেটা সোর্স চেঞ্জ
+            const dataSource = document.getElementById('adv-data-source');
+            if (dataSource) {
+                dataSource.addEventListener('change', function() {
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+            }
+
+            // পিরিয়ড চেঞ্জ
+            const periodSelect = document.getElementById('adv-chart-period');
+            if (periodSelect) {
+                periodSelect.addEventListener('change', function() {
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+            }
+
+            // ইন্ডিকেটর বাটন
+            document.querySelectorAll('.indicator-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const indicator = this.dataset.indicator;
+                    this.classList.toggle('active');
+                    if (typeof window.advActiveIndicators !== 'undefined') {
+                        window.advActiveIndicators[indicator] = this.classList.contains('active');
+                    }
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+            });
+
+            // লাইন/ক্যান্ডেল টগল
+            const lineBtn = document.getElementById('toggle-chart-type');
+            const candleBtn = document.getElementById('toggle-chart-type-candle');
+            if (lineBtn && candleBtn) {
+                lineBtn.addEventListener('click', function() {
+                    this.classList.add('active');
+                    candleBtn.classList.remove('active');
+                    document.getElementById('line-chart-wrapper').style.display = 'block';
+                    document.getElementById('candlestick-wrapper').style.display = 'none';
+                    window.currentChartType = 'line';
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+                candleBtn.addEventListener('click', function() {
+                    this.classList.add('active');
+                    lineBtn.classList.remove('active');
+                    document.getElementById('line-chart-wrapper').style.display = 'none';
+                    document.getElementById('candlestick-wrapper').style.display = 'block';
+                    window.currentChartType = 'candle';
+                    // ক্যান্ডেল চার্ট লোড করুন
+                    const input = document.getElementById('adv-chart-search');
+                    const val = input ? input.value.trim().toUpperCase() : '';
+                    if (val) {
+                        window.loadAdvancedChart(val);
+                    } else {
+                        window.loadAdvancedChart('GP');
+                    }
+                });
+            }
+
+            // ফুলস্ক্রিন ও PNG ডাউনলোড বাটন (লাইন)
+            const fsLine = document.getElementById('fullscreen-btn-line');
+            if (fsLine) fsLine.addEventListener('click', advToggleFullscreen);
+            const pngLine = document.getElementById('download-png-btn-line');
+            if (pngLine) pngLine.addEventListener('click', advDownloadPNG);
+
+            // ফুলস্ক্রিন ও PNG ডাউনলোড বাটন (ক্যান্ডেল)
+            const fsCandle = document.getElementById('fullscreen-btn');
+            if (fsCandle) fsCandle.addEventListener('click', advToggleFullscreen);
+            const pngCandle = document.getElementById('download-png-btn');
+            if (pngCandle) pngCandle.addEventListener('click', function() {
+                // ক্যান্ডেলের জন্য আলাদা PNG ফাংশন বা সাধারণ
+                advDownloadPNG();
+            });
+
+            // প্রিসেট বাটন
+            const savePreset = document.getElementById('save-preset-btn');
+            if (savePreset) savePreset.addEventListener('click', saveIndicatorPreset);
+            const deletePreset = document.getElementById('delete-preset-btn');
+            if (deletePreset) deletePreset.addEventListener('click', deleteIndicatorPreset);
+            
+            // প্রিসেট সিলেক্ট
+            const presetSelect = document.getElementById('preset-select');
+            if (presetSelect) {
+                presetSelect.addEventListener('change', function() {
+                    loadIndicatorPreset(this.value);
+                });
+            }
+            updatePresetSelect();
+
+            // টাইমফ্রেম বাটন
+            document.querySelectorAll('.tf-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tf = this.dataset.tf;
+                    switchTimeframe(tf);
+                });
+            });
+
+            // সার্চ সাজেশন হ্যান্ডলার
+            if (searchInput) {
+                searchInput.addEventListener('input', function(e) {
+                    const query = this.value.trim().toUpperCase();
+                    const suggestions = document.getElementById('adv-chart-suggestions');
+                    if (!suggestions) return;
+                    if (!query || typeof window.dseStocks === 'undefined' || window.dseStocks.length === 0) {
+                        suggestions.style.display = 'none';
+                        return;
+                    }
+                    const filtered = window.dseStocks.filter(s => s.startsWith(query)).slice(0, 10);
+                    if (filtered.length > 0) {
+                        suggestions.style.display = 'block';
+                        suggestions.innerHTML = filtered.map(s =>
+                            `<div class="suggestion-item" style="padding:10px 16px; cursor:pointer; border-bottom:1px solid var(--border-color);" onclick="window.selectAdvChartStock('${s}')">${s}</div>`
+                        ).join('');
+                    } else {
+                        suggestions.style.display = 'none';
+                    }
+                });
+
+                // সার্চ সাজেশনের জন্য গ্লোবাল ফাংশন
+                window.selectAdvChartStock = function(ticker) {
+                    if (searchInput) searchInput.value = ticker;
+                    const suggestions = document.getElementById('adv-chart-suggestions');
+                    if (suggestions) suggestions.style.display = 'none';
+                    window.loadAdvancedChart(ticker);
+                };
+            }
+
+            console.log(`✅ Advanced Charts initialized successfully for: ${tickerFromURL || 'GP'}`);
+        });
+    </script>
+</body>
+</html>
